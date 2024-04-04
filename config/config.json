@@ -1,15 +1,15 @@
 {
     "device_ip": "192.168.1.10",
+    "static_transformation": [
+        -0.0195,
+        -0.005,
+        0,
+        0,
+        0,
+        0
+    ],
     "rgb": {
         "RTSP_url": "TODO",
-        "static_transformation": [
-            -0.0195,
-            -0.005,
-            0,
-            0,
-            0,
-            0
-        ],
         "camera_calibrations": {
             "320x240": {
                 "width": 320,
