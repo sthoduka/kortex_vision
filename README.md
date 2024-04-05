@@ -10,6 +10,12 @@ The following instructions are for ROS Kinetic Kame, running under **Ubuntu 16.0
 ### Building from Source
 
 #### Dependencies
+##### JSON parser package
+* libjsoncpp1
+
+```sh
+sudo apt install libjsoncpp1
+```
 
 ##### GStreamer packages
 * gstreamer1.0-tools
