@@ -9,7 +9,7 @@
         0
     ],
     "rgb": {
-        "RTSP_url": "TODO",
+        "rtsp_stream_location": "TODO",
         "camera_calibrations": {
             "320x240": {
                 "width": 320,
@@ -206,7 +206,7 @@
         }
     },
     "depth": {
-        "RTSP_url": "TODO",
+        "rtsp_stream_location": "TODO",
         "camera_calibrations": {
             "424x240": {
                 "width": 424,
