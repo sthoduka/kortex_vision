@@ -1,6 +1,9 @@
 #ifndef KINOVA_VISION_H
 #define KINOVA_VISION_H
 
+#include <iostream>
+#include <stdio.h>
+
 extern "C" {
 #include <gst/gst.h>
 #include <gst/app/gstappsink.h>
