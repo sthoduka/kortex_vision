@@ -31,7 +31,40 @@ Vision::Vision()
 
 Vision::~Vision()
 {
-  std::cout << "Destrssssoyed" << std::endl;
+  std::cout << "Vision object destructed." << std::endl;
+}
+
+void Vision::config_rgb_camera()
+{
+  std::cout << "Loading rgb camera config" << std::endl;
+}
+
+void Vision::config_depth_camera()
+{
+  std::cout << "Loading depth camera config" << std::endl;
+}
+
+void Vision::get_color_image(cv::Mat& img)
+{
+  std::cout << "Passing rgb images." << std::endl;
+}
+
+void Vision::get_depth_image(cv::Mat& depth_img)
+{
+  std::cout << "Passing depth images." << std::endl;
+}
+
+void Vision::get_color_and_depth_image(cv::Mat& img, cv::Mat& depth_img)
+{
+  std::cout << "Passing both rgb and depth images." << std::endl;
+}
+void Vision::run()
+{
+}  // TODO
+
+void Vision::stop()
+{
+  // ToDO
 }
 
 // bool Vision::configure()
@@ -340,7 +373,8 @@ Vision::~Vision()
 
 //   if (cur_cinfo.height != image_height_ || cur_cinfo.width != image_width_)
 //   {
-//     ROS_WARN_ONCE("[%s]: Calibration file sensor resolution (%dx%d pixels) doesn't match stream resolution (%dx%d "
+//     ROS_WARN_ONCE("[%s]: Calibration file sensor resolution (%dx%d pixels) doesn't match stream resolution (%dx%d
+//     "
 //                   "pixels)",
 //                   camera_name_.c_str(), cur_cinfo.height, cur_cinfo.width, image_height_, image_width_);
 //   }
@@ -367,7 +401,8 @@ Vision::~Vision()
 //   // Complain if the returned buffer is smaller than we expect
 //   if (buf_size < expected_frame_size)
 //   {
-//     ROS_WARN_ONCE("[%s]: Image buffer underflow: expected frame to be %u bytes but got only %lu bytes. Make sure "
+//     ROS_WARN_ONCE("[%s]: Image buffer underflow: expected frame to be %u bytes but got only %lu bytes. Make sure
+//     "
 //                   "frames are correctly encoded.",
 //                   camera_name_.c_str(), expected_frame_size, buf_size);
 //   }
@@ -477,11 +512,12 @@ Vision::~Vision()
 // {
 //   if (!configure())
 //   {
-//     ROS_FATAL("Failed to configure kinova vision node!");
+//     std::cout << "Error: Failed to configure kinova vision!" << std::endl;
 //     return;
 //   }
 
-//   while (ros::ok() && !quit_requested_)
+//   while (!quit_requested_)
+
 //   {
 //     if (!is_started_)
 //     {
