@@ -55,13 +55,22 @@ int main(int argc, char** argv)
   std::unique_ptr<Vision> kv(new Vision());
   bool use_rgb_camera = (parser.get<std::string>("use_rgb") == "true");
   bool use_depth_camera = (parser.get<std::string>("use_depth") == "true");
+
   if (use_rgb_camera)
   {
     // ToDO
     kv->config_rgb_camera();
   }
-  cv::Mat img(3, 3, CV_8UC3);        // TODO
-  cv::Mat depth_img(3, 3, CV_8UC1);  // TODO
+  int img_height = parameters["rgb"]["camera_calibrations"][parser.get<std::string>("rgbresolution")]["height"].asInt();
+  int img_width = parameters["rgb"]["camera_calibrations"][parser.get<std::string>("rgbresolution")]["width"].asInt();
+  cv::Mat img(img_height, img_width, CV_8UC3);  // TODO
+  std::cout << "img size: " << img.size() << std::endl;
+  int depthimg_height =
+      parameters["depth"]["camera_calibrations"][parser.get<std::string>("depthresolution")]["height"].asInt();
+  int depthimg_width =
+      parameters["depth"]["camera_calibrations"][parser.get<std::string>("depthresolution")]["width"].asInt();
+  cv::Mat depth_img(depthimg_height, depthimg_width, CV_8UC1);  // TODO
+  std::cout << "depth_img size: " << depth_img.size() << std::endl;
   if (use_depth_camera)
   {
     // ToDO
