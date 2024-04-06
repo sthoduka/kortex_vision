@@ -30,12 +30,45 @@ std::vector<float> jsonToFloatVector(const Json::Value& jsonArray)
   return result;
 }
 
-std::string keys = "{ help  h         |                           | Print help message. }"
-                   "{ config c        | ../config/config.json     | Usage: Path to json config file.}"
-                   "{ use_rgb         | true                      | Usage: enable the use of RGB camera.}"
-                   "{ use_depth       | true                      | Usage : enable the use of Depth camera.}"
-                   "{ rgbresolution   | 320x240                   | Available: 320x240, 640x480, 1280x720, 1920x1080}"
-                   "{ depthresolution | 424x240                   | Available: 424x240, 480x270}";
+class CameraCalibration
+{
+public:
+  int height;
+  int width;
+  std::string type;
+  std::vector<float> camera_matrix;
+  std::vector<float> distortion;
+  std::vector<float> rectification;
+  std::vector<float> projection;
+  CameraCalibration(const Json::Value& jsonArray)
+  {
+    if (jsonArray.isNull())
+    {
+      std::cerr << "Input JSON is Null!" << std::endl;
+    }
+    else
+    {
+      height = jsonArray["height"].asInt();
+      width = jsonArray["width"].asInt();
+
+      type = jsonArray["type"].asString();
+      camera_matrix = jsonToFloatVector(jsonArray["camera_matrix"]);
+      distortion = jsonToFloatVector(jsonArray["distortion"]);
+      rectification = jsonToFloatVector(jsonArray["rectification"]);
+      projection = jsonToFloatVector(jsonArray["projection"]);
+    }
+  }
+  ~CameraCalibration()
+  {
+  }
+};
+
+std::string keys = "{ help  h        |                       | Print help message. }"
+                   "{ config c       | ../config/config.json | Usage: Path to json file.}"
+                   "{ use_rgb        | true                  | Usage: enable use of RGB cam.}"
+                   "{ use_depth      | true                  | Usage : enable use Depth cam.}"
+                   "{ rgbresolution  | 320x240               | Available: 320x240, 640x480, 1280x720, 1920x1080}"
+                   "{ depthresolution| 424x240               | Available: 424x240, 480x270}";
 
 int main(int argc, char** argv)
 {
@@ -47,33 +80,33 @@ int main(int argc, char** argv)
     parser.printMessage();
     return 0;
   }
-  Json::Value parameters;
+  Json::Value param;
   std::ifstream config_doc(parser.get<std::string>("config"));
-  config_doc >> parameters;
-  std::string device_ip = parameters["device_ip"].asString();
-  std::vector<float> static_transformation = jsonToFloatVector(parameters["static_transformation"]);
+  config_doc >> param;
+  std::string device_ip = param["device_ip"].asString();
+  std::vector<float> static_transformation = jsonToFloatVector(param["static_transformation"]);
   std::unique_ptr<Vision> kv(new Vision());
   bool use_rgb_camera = (parser.get<std::string>("use_rgb") == "true");
   bool use_depth_camera = (parser.get<std::string>("use_depth") == "true");
+  std::string depth_resolution = parser.get<std::string>("depthresolution");
+  std::string rgb_resolution = parser.get<std::string>("rgbresolution");
+  Json::Value rgb_camera_calibration =
+      (use_rgb_camera) ? param["rgb"]["camera_calibrations"][rgb_resolution] : Json::nullValue;
+  Json::Value depth_camera_calibration =
+      (use_depth_camera) ? param["depth"]["camera_calibrations"][depth_resolution] : Json::nullValue;
+  cv::Mat img, depth_img;
 
   if (use_rgb_camera)
   {
-    // ToDO
+    std::unique_ptr<CameraCalibration> rgb_setting(new CameraCalibration(rgb_camera_calibration));
+    img = cv::Mat(rgb_setting->height, rgb_setting->width, CV_8UC3);
     kv->config_rgb_camera();
   }
-  int img_height = parameters["rgb"]["camera_calibrations"][parser.get<std::string>("rgbresolution")]["height"].asInt();
-  int img_width = parameters["rgb"]["camera_calibrations"][parser.get<std::string>("rgbresolution")]["width"].asInt();
-  cv::Mat img(img_height, img_width, CV_8UC3);  // TODO
-  std::cout << "img size: " << img.size() << std::endl;
-  int depthimg_height =
-      parameters["depth"]["camera_calibrations"][parser.get<std::string>("depthresolution")]["height"].asInt();
-  int depthimg_width =
-      parameters["depth"]["camera_calibrations"][parser.get<std::string>("depthresolution")]["width"].asInt();
-  cv::Mat depth_img(depthimg_height, depthimg_width, CV_8UC1);  // TODO
-  std::cout << "depth_img size: " << depth_img.size() << std::endl;
+
   if (use_depth_camera)
   {
-    // ToDO
+    std::unique_ptr<CameraCalibration> depth_setting(new CameraCalibration(depth_camera_calibration));
+    depth_img = cv::Mat(depth_setting->height, depth_setting->width, CV_8UC1);  // TODO
     kv->config_depth_camera();
   }
   kv->run();
