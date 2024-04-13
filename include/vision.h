@@ -32,7 +32,7 @@ public:
 
   void run();
   void quit();
-  void config_rgb_camera();
+  void config_rgb_camera(std::string camera_name, std::string frame_id);
   void config_depth_camera();
   void stop();
   void get_color_image(cv::Mat& img);
