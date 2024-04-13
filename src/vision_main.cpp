@@ -1,4 +1,5 @@
 #include "../include/vision.h"
+#include "../include/calibrationparser.h"
 // #include "constants.h"
 #include <cstdlib>
 #include "opencv2/opencv.hpp"
@@ -7,61 +8,6 @@
 #include <jsoncpp/json/json.h>
 #include <memory>
 #include <fstream>
-
-std::vector<float> jsonToFloatVector(const Json::Value& jsonArray)
-{
-  std::vector<float> result;
-  if (!jsonArray.isArray())
-  {
-    std::cerr << "Input JSON is not an array!" << std::endl;
-    return result;
-  }
-  for (unsigned int i = 0; i < jsonArray.size(); i++)
-  {
-    if (jsonArray[i].isDouble() or jsonArray[i].isInt())
-    {
-      result.push_back(static_cast<float>(jsonArray[i].asFloat()));
-    }
-    else
-    {
-      std::cerr << "Element is not a float number!" << std::endl;
-    }
-  }
-  return result;
-}
-
-class CameraCalibration
-{
-public:
-  int height;
-  int width;
-  std::string type;
-  std::vector<float> camera_matrix;
-  std::vector<float> distortion;
-  std::vector<float> rectification;
-  std::vector<float> projection;
-  CameraCalibration(const Json::Value& jsonArray)
-  {
-    if (jsonArray.isNull())
-    {
-      std::cerr << "Input JSON is Null!" << std::endl;
-    }
-    else
-    {
-      height = jsonArray["height"].asInt();
-      width = jsonArray["width"].asInt();
-
-      type = jsonArray["type"].asString();
-      camera_matrix = jsonToFloatVector(jsonArray["camera_matrix"]);
-      distortion = jsonToFloatVector(jsonArray["distortion"]);
-      rectification = jsonToFloatVector(jsonArray["rectification"]);
-      projection = jsonToFloatVector(jsonArray["projection"]);
-    }
-  }
-  ~CameraCalibration()
-  {
-  }
-};
 
 std::string keys = "{ help  h        |                       | Print help message. }"
                    "{ config c       | ../config/config.json | Usage: Path to json file.}"
@@ -100,7 +46,9 @@ int main(int argc, char** argv)
   {
     std::unique_ptr<CameraCalibration> rgb_setting(new CameraCalibration(rgb_camera_calibration));
     img = cv::Mat(rgb_setting->height, rgb_setting->width, CV_8UC3);
-    kv->config_rgb_camera();
+    std::string camera_name = rgb_setting->type;
+    std::string frame_id = "TODO";
+    kv->config_rgb_camera(camera_name, frame_id);
   }
 
   if (use_depth_camera)
@@ -122,6 +70,7 @@ int main(int argc, char** argv)
   {
     kv->get_color_image(img);
   }
+
   kv->stop();
   return EXIT_SUCCESS;
 }
