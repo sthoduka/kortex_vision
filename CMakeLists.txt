@@ -21,7 +21,9 @@ include_directories(
 set(CMAKE_CXX_FLAGS "-fpermissive")
 
 add_library(KinovaVision src/vision.cpp)
+add_library(CalibrationParser src/calibrationparser.cpp)
 target_link_libraries(KinovaVision
+CalibrationParser
   ${OpenCV_LIBS}
   ${JSONCPP_LIBRARIES}
   ${GSTREAMER_LIBRARIES}
@@ -32,6 +34,7 @@ target_link_libraries(KinovaVision
 add_executable(KinovaVisionMain src/vision_main.cpp)
 target_link_libraries(KinovaVisionMain PRIVATE  
   KinovaVision
+  CalibrationParser
   ${OpenCV_LIBS}
   ${JSONCPP_LIBRARIES}
   ${GSTREAMER_LIBRARIES}
